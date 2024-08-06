@@ -1,6 +1,11 @@
 Unlock Dropbox and Google Drive support:
   - Enabled: no
-  - Description: ''
+  - Description: |
+      Remove hardcoded checks for the device model and enable Google Drive and Dropbox
+      support by default.
+
+      If needed, they can be disabled in `[FeatureSettings]` section of `.kobo/Kobo/Kobo eReader.conf`
+      by adding `GoogleDrive=0` or `Dropbox=0`.
 
   # Patch out hardcoded device model check.
   # FindH is not very relevant, since we're replacing the whole function with `return true`.
