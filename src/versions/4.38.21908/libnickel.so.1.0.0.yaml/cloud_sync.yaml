@@ -1,11 +1,22 @@
 Unlock Dropbox and Google Drive support:
   - Enabled: no
   - Description: |
-      Remove hardcoded checks for the device model and enable Google Drive and Dropbox
-      support by default.
+        Remove hardcoded checks for the device model for the Google Drive and Dropbox support.
 
-      If needed, they can be disabled in `[FeatureSettings]` section of `.kobo/Kobo/Kobo eReader.conf`
-      by adding `GoogleDrive=0` or `Dropbox=0`.
+        In addition to the patch, the following modifications to `.kobo/Kobo/Kobo eReader.conf`
+        file are required:
+
+        `[FeatureSettings]` section:
+
+        GoogleDrive=1
+        Dropbox=1
+
+        `[OneStoreServices]` section:
+
+        kobo_googledrive_link_account_enabled=True
+        googledrive_link_account_start=https://authorize.kobo.com/{region}/{language}/linkcloudstorage/provider/google_drive
+        kobo_dropbox_link_account_enabled=True
+        dropbox_link_account_poll=https://authorize.kobo.com/{region}/{language}/LinkDropbox
 
   # Patch out hardcoded device model check.
   # FindH is not very relevant, since we're replacing the whole function with `return true`.
@@ -18,15 +29,3 @@ Unlock Dropbox and Google Drive support:
       Base: "Device::supportsDropbox() const"
       FindH: 98 B5 01 21 00 AF
       ReplaceH: 00 B5 01 20 00 BD # push {lr}; movs r0,#1; pop {pc}
-
-  # Change FeatureSettings defaults to true.
-  - ReplaceBytes:
-      Base: "FeatureSettings::googleDrive()"
-      Offset: 0x18
-      FindH: 00 21 # movs r1, #0
-      ReplaceH: 01 21 # movs r1, #1
-  - ReplaceBytes:
-      Base: "FeatureSettings::dropbox()"
-      Offset: 0x18
-      FindH: 00 21 # movs r1, #0
-      ReplaceH: 01 21 # movs r1, #1
